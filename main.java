@@ -1,25 +1,53 @@
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class main {
     public static void main(String[] args) {
-        System.out.println("Hello, World!");
+        // Image size and Mandelbrot detail level.
+        int width = 1920, height = 1080, maxIter = 500;
 
-        BufferedImage bImage = new BufferedImage(1920, 1080, BufferedImage.TYPE_INT_RGB);
+        // Area of the complex plane to draw.
+        double minRe = -2.5, maxRe = 1.0, minIm = -1.0, maxIm = 1.0;
 
-        try {
-            // Write the image to a file
-            File outputFile = new File("saved_image.png");
-            boolean success = ImageIO.write(bImage, "png", outputFile);
+        // This is the image we will draw pixels into.
+        BufferedImage bImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 
-            if (success) {
-                System.out.println("Image saved successfully: " + outputFile.getAbsolutePath());
+        // Loop through every pixel row.
+        for (int y = 0; y < height; y++) {
+            // Convert y position to the imaginary part of a complex number.
+            double ci = maxIm - y * (maxIm - minIm) / (height - 1);
+
+            // Loop through every pixel in this row.
+            for (int x = 0; x < width; x++) {
+                // Convert x position to the real part of a complex number.
+                double cr = minRe + x * (maxRe - minRe) / (width - 1);
+
+                // c is the point we are testing in the complex plane.
+                ComplexNumber c = new ComplexNumber(cr, ci);
+
+                // Start z at 0 for Mandelbrot: z(n+1) = z(n)^2 + c
+                ComplexNumber z = new ComplexNumber(0, 0);
+
+                // Count how many iterations before z escapes.
+                int iter = 0;
+                while (iter < maxIter && z.mag2() <= 4.0) {
+                    z = z.square().add(c);
+                    iter++;
+                }
+
+                // If it never escaped, color black. Otherwise use a simple green gradient.
+                int rgb = (iter == maxIter) ? 0x000000 : (iter * 8) << 8;
+                bImage.setRGB(x, y, rgb);
             }
+        }
+
+        // Save the image to a PNG file.
+        try {
+            ImageIO.write(bImage, "png", new File("saved_image.png"));
         } catch (IOException e) {
+            // Print the error if saving fails.
             e.printStackTrace();
         }
     }
