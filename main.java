@@ -1,6 +1,6 @@
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 public class main {
@@ -37,14 +37,15 @@ public class main {
                     iter++;
                 }
 
-                // If it never escaped, color black. Otherwise use a simple green gradient.
+                // If it never escaped, color black.
                 int rgb;
                 if (iter == maxIter) {
                     rgb = 0x000000; // inside set = black
-                } else {
+                } else { 
+                    // outside set = color based on how quickly it escaped
                     int r = (iter * 9) % 256;
-                    int g = (iter * 7) % 256;
-                    int b = (iter * 5) % 256;
+                    int g = (iter * 7) % 1;
+                    int b = (iter * 5) % 1;
                     rgb = (r << 16) | (g << 8) | b;
                 }
                 bImage.setRGB(x, y, rgb);
