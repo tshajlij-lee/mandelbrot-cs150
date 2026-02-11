@@ -38,7 +38,15 @@ public class main {
                 }
 
                 // If it never escaped, color black. Otherwise use a simple green gradient.
-                int rgb = (iter == maxIter) ? 0x000000 : (iter * 8) << 8;
+                int rgb;
+                if (iter == maxIter) {
+                    rgb = 0x000000; // inside set = black
+                } else {
+                    int r = (iter * 9) % 256;
+                    int g = (iter * 7) % 256;
+                    int b = (iter * 5) % 256;
+                    rgb = (r << 16) | (g << 8) | b;
+                }
                 bImage.setRGB(x, y, rgb);
             }
         }
